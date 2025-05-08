@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>College Canteen</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation Tabs -->
+<header class="navbar">
+<h1>CampusBites</h1>
+</header>
+
+<div class="tabs-wrapper">
+  <ul class="nav-tabs">
+    <li><a href="#" class="tab-link active" data-tab="home">Home</a></li>
+    <li><a href="#" class="tab-link" data-tab="menu">Menu</a></li>
+    <li><a href="#" class="tab-link" data-tab="cart">Cart</a></li>
+    <li><a href="#" class="tab-link" data-tab="track">Track Order</a></li>
+    <li><a href="#" class="tab-link" data-tab="post">Post</a></li>
+  </ul>
+</div>
+
+<main>
+
+<!-- Home Tab -->
+<section id="home" class="tab-content active">
+  <section class="banner">
+    <img src="clgb.jpg" alt="Delicious Meals Await" />
+  </section>
+  <h3>🍽️ Recommended for You</h3>
+  <div id="recommendedContainer" class="grid-container">
+    <!-- JS will load recommended items here -->
+  </div>
+</section>
+
+<!-- Menu Tab -->
+<section id="menu" class="tab-content">
+  <h2>Menu</h2>
+
+  <!-- Category Tabs -->
+  <div class="category-tabs">
+    <button class="category-tab active" data-category="All">All</button>
+    <button class="category-tab" data-category="Snacks">Snacks</button>
+    <button class="category-tab" data-category="Drinks">Drinks</button>
+    <button class="category-tab" data-category="Meals">Meals</button>
+  </div>
+
+  <!-- Menu Items Container -->
+  <div id="menuContainer" class="grid-container">
+    <!-- JS will inject items here -->
+  </div>
+</section>
+
+  <!-- Cart Tab -->
+  <section id="cart" class="tab-content">
+    <h2>Your Cart</h2>
+    <div id="cartContainer">
+      <!-- Cart items will be loaded here -->
+    </div>
+  </section>
+
+  <!-- Track Order Tab -->
+  <section id="track" class="tab-content">
+    <h2>Your Orders</h2>
+    <div id="order-list">
+      <!-- List of orders will appear here -->
+    </div>
+  </section>
+
+  <!-- Post Tab -->
+  <section id="post" class="tab-content">
+    <h2>Post a New Food Item</h2>
+  
+    <!-- Login Prompt -->
+    <div id="loginPrompt">
+      <input type="text" id="username" placeholder="Username" required><br>
+      <input type="password" id="password" placeholder="Password" required><br>
+      <button onclick="validateLogin()">Login to Post</button>
+    </div>
+  
+    <!-- Form Hidden Until Login -->
+    <form id="menuForm" enctype="multipart/form-data" style="display: none;">
+      <input type="text" id="itemName" name="name" placeholder="Item Name" required><br>
+      <input type="number" id="itemPrice" name="price" placeholder="Price" required><br>
+      
+      <label>Category:</label>
+      <select name="category" id="itemCategory" required onchange="toggleFlavour(this.value)">
+        <option value="">Select Category</option>
+        <option value="Snacks">Snacks</option>
+        <option value="Drinks">Drinks</option>
+        <option value="Meals">Meals</option>
+      </select><br>
+  
+      <div id="flavourField" style="display:none;">
+        <input type="text" name="flavour" placeholder="Flavour (only for Snacks)">
+      </div>
+  
+      <input type="file" id="itemImage" name="image" accept="image/*" required><br>
+      <button type="submit">Post Item</button>
+    </form>
+  </section>
+  
+  <script>
+    function validateLogin() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+  
+      // Simple static login check (for demo)
+      if (user === "skanda" && pass === "12345") {
+        document.getElementById('loginPrompt').style.display = "none";
+        document.getElementById('menuForm').style.display = "block";
+      } else {
+        alert("Invalid username or password");
+      }
+    }
+  
+    function toggleFlavour(category) {
+      const flavourField = document.getElementById('flavourField');
+      flavourField.style.display = category === 'Snacks' ? 'block' : 'none';
+    }
+  </script>
+  
+  
+  <script>
+    function toggleFlavour(value) {
+      const flavourField = document.getElementById('flavourField');
+      if (value === 'Snacks') {
+        flavourField.style.display = 'block';
+      } else {
+        flavourField.style.display = 'none';
+      }
+    }
+  </script>
+  
+</main>
+
+<!-- Footer -->
+
+<!-- Tab Switching Script -->
+<script>
+  const tabs = document.querySelectorAll('.tab-link');
+  const sections = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = tab.getAttribute('data-tab');
+
+      tabs.forEach(t => t.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+
+      tab.classList.add('active');
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+
+      if (targetId === 'cart') {
+        if (typeof renderCart === "function") renderCart();
+      }
+
+      if (targetId === 'track') {
+        if (typeof fetchOrders === "function") fetchOrders();
+      }
+
+      if (targetId === 'home') {
+        if (typeof loadRecommended === "function") loadRecommended();
+      }
+
+      if (targetId === 'menu') {
+        if (typeof loadMenuItems === "function") loadMenuItems();
+      }
+    });
+  });
+  // Menu tab filtering
+// Menu tab filtering
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.category-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const selectedCategory = btn.getAttribute('data-category');
+      renderMenuItems(selectedCategory);
+    });
+  });
+});
+
+
+</script>
+
+<!-- Load external script -->
+<script src="script.js"></script>
+</body>
+</html>
