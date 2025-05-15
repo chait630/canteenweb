@@ -7,23 +7,30 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const cloudinary = require("cloudinary").v2;
 const { Readable } = require("stream");
+const session = require("express-session");
+const bcrypt = require("bcryptjs");
 
 const MenuItem = require("./models/MenuItem");
 const Order = require("./models/Order");
+const User = require("./models/User");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ✅ Middleware
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "canteenSecret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // ✅ Static files
 app.use(express.static(path.join(__dirname, "public")));
-
-// ✅ Prevent favicon error
-app.get("/favicon.ico", (req, res) => res.status(204).end());
 
 // ✅ CSP headers
 app.use((req, res, next) => {
@@ -42,12 +49,13 @@ cloudinary.config({
 });
 
 // ✅ MongoDB connect
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ Multer (memory storage)
 const upload = multer({ storage: multer.memoryStorage() });
@@ -70,6 +78,27 @@ const uploadToCloudinary = (buffer) => {
   });
 };
 
+// ✅ Auth: Register Admin
+app.post("/api/admin/login", (req, res) => {
+  const { username, password } = req.body;
+
+  if (
+    username === process.env.ADMIN_USERNAME &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    return res.status(200).json({ message: "Login successful" });
+  } else {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+
+
+// ✅ Middleware: Auth Check
+const isAuthenticated = (req, res, next) => {
+  if (req.session.user) return next();
+  return res.status(401).json({ message: "❌ Unauthorized" });
+};
+
 // ✅ GET: Menu
 app.get("/api/menu", async (req, res) => {
   try {
@@ -80,8 +109,8 @@ app.get("/api/menu", async (req, res) => {
   }
 });
 
-// ✅ POST: Add item
-app.post("/api/menu", upload.single("image"), async (req, res) => {
+// ✅ POST: Add item (protected)
+app.post("/api/menu", isAuthenticated, upload.single("image"), async (req, res) => {
   try {
     const { name, price, category, flavour } = req.body;
     if (!req.file) return res.status(400).json({ message: "❌ No image file uploaded." });
@@ -94,7 +123,7 @@ app.post("/api/menu", upload.single("image"), async (req, res) => {
       price,
       imageUrl: uploadResult.secure_url,
       category: finalCategory,
-      flavour: finalCategory === "Snacks" ? flavour : undefined
+      flavour: finalCategory === "Snacks" ? flavour : undefined,
     });
 
     await newItem.save();
