@@ -12,7 +12,7 @@
 
 <!-- Navigation Tabs -->
 <header class="navbar">
-<h1>CampusBites</h1>
+  <h1>CampusBites</h1>
 </header>
 
 <div class="tabs-wrapper">
@@ -30,10 +30,10 @@
 <!-- Home Tab -->
 <section id="home" class="tab-content active">
   <section class="banner">
-    <img src="clgb.jpg" alt="Delicious Meals Await" />
+    <img src="clgb.jpg" alt="Delicious Meals Await" class="w-full h-[600px] object-cover"/>
   </section>
   <h3>🍽️ Recommended for You</h3>
-  <div id="recommendedContainer" class="grid-container">
+  <div id="recommendedContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4">
     <!-- JS will load recommended items here -->
   </div>
 </section>
@@ -51,95 +51,78 @@
   </div>
 
   <!-- Menu Items Container -->
-  <div id="menuContainer" class="grid-container">
+  <div id="menuContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4">
     <!-- JS will inject items here -->
   </div>
 </section>
 
-  <!-- Cart Tab -->
-  <section id="cart" class="tab-content">
-    <h2>Your Cart</h2>
-    <div id="cartContainer">
-      <!-- Cart items will be loaded here -->
-    </div>
-  </section>
+<!-- Cart Tab -->
+<section id="cart" class="tab-content">
+  <h2>Your Cart</h2>
+  <div id="cartContainer">
+    <!-- Cart items will be loaded here -->
+  </div>
+</section>
 
-  <!-- Track Order Tab -->
-  <section id="track" class="tab-content">
-    <h2>Your Orders</h2>
-    <div id="order-list">
-      <!-- List of orders will appear here -->
-    </div>
-  </section>
+<!-- Track Order Tab -->
+<section id="track" class="tab-content">
+  <h2>Your Orders</h2>
+  <div id="order-list">
+    <!-- List of orders will appear here -->
+  </div>
+</section>
 
-  <!-- Post Tab -->
-  <section id="post" class="tab-content">
-    <h2>Post a New Food Item</h2>
-  
-    <!-- Login Prompt -->
-    <div id="loginPrompt">
-      <input type="text" id="username" placeholder="Username" required><br>
-      <input type="password" id="password" placeholder="Password" required><br>
-      <button onclick="validateLogin()">Login to Post</button>
-    </div>
-  
-    <!-- Form Hidden Until Login -->
-    <form id="menuForm" enctype="multipart/form-data" style="display: none;">
-      <input type="text" id="itemName" name="name" placeholder="Item Name" required><br>
-      <input type="number" id="itemPrice" name="price" placeholder="Price" required><br>
-      
-      <label>Category:</label>
-      <select name="category" id="itemCategory" required onchange="toggleFlavour(this.value)">
-        <option value="">Select Category</option>
-        <option value="Snacks">Snacks</option>
-        <option value="Drinks">Drinks</option>
-        <option value="Meals">Meals</option>
-      </select><br>
-  
-      <div id="flavourField" style="display:none;">
-        <input type="text" name="flavour" placeholder="Flavour (only for Snacks)">
-      </div>
-  
-      <input type="file" id="itemImage" name="image" accept="image/*" required><br>
-      <button type="submit">Post Item</button>
-    </form>
-  </section>
-  
-  <script>
-    function validateLogin() {
-      const user = document.getElementById('username').value;
-      const pass = document.getElementById('password').value;
-  
-      // Simple static login check (for demo)
-      if (user === "skanda" && pass === "12345") {
-        document.getElementById('loginPrompt').style.display = "none";
-        document.getElementById('menuForm').style.display = "block";
-      } else {
-        alert("Invalid username or password");
-      }
-    }
-  
-    function toggleFlavour(category) {
-      const flavourField = document.getElementById('flavourField');
-      flavourField.style.display = category === 'Snacks' ? 'block' : 'none';
-    }
-  </script>
-  
-  
-  <script>
-    function toggleFlavour(value) {
-      const flavourField = document.getElementById('flavourField');
-      if (value === 'Snacks') {
-        flavourField.style.display = 'block';
-      } else {
-        flavourField.style.display = 'none';
-      }
-    }
-  </script>
-  
-</main>
+<!-- Post Tab -->
+<section id="post" class="tab-content">
+  <h2>Post a New Food Item</h2>
 
-<!-- Footer -->
+  <!-- Login Prompt -->
+  <div id="loginPrompt">
+    <input type="text" id="username" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="button" onclick="validateLogin()">Login to Post</button>
+  </div>
+
+  <!-- Form Hidden Until Login -->
+  <form id="menuForm" enctype="multipart/form-data" style="display: none;">
+    <input type="text" id="itemName" name="name" placeholder="Item Name" required><br>
+    <input type="number" id="itemPrice" name="price" placeholder="Price" required><br>
+
+    <label>Category:</label>
+    <select name="category" id="itemCategory" required onchange="toggleFlavour(this.value)">
+      <option value="">Select Category</option>
+      <option value="Snacks">Snacks</option>
+      <option value="Drinks">Drinks</option>
+      <option value="Meals">Meals</option>
+    </select><br>
+
+    <div id="flavourField" style="display:none;">
+      <input type="text" name="flavour" placeholder="Flavour (only for Snacks)">
+    </div>
+
+    <input type="file" id="itemImage" name="image" accept="image/*" required><br>
+    <button type="submit">Post Item</button>
+  </form>
+</section>
+
+<script>
+  function validateLogin() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+
+    if (user === "skanda" && pass === "12345") {
+      document.getElementById('loginPrompt').style.display = "none";
+      document.getElementById('menuForm').style.display = "block";
+    } else {
+      alert("Invalid username or password");
+    }
+  }
+
+  function toggleFlavour(category) {
+    const flavourField = document.getElementById('flavourField');
+    flavourField.style.display = category === 'Snacks' ? 'block' : 'none';
+  }
+</script>
 
 <!-- Tab Switching Script -->
 <script>
@@ -160,40 +143,61 @@
         targetSection.classList.add('active');
       }
 
-      if (targetId === 'cart') {
-        if (typeof renderCart === "function") renderCart();
-      }
-
-      if (targetId === 'track') {
-        if (typeof fetchOrders === "function") fetchOrders();
-      }
-
-      if (targetId === 'home') {
-        if (typeof loadRecommended === "function") loadRecommended();
-      }
-
-      if (targetId === 'menu') {
-        if (typeof loadMenuItems === "function") loadMenuItems();
-      }
+      if (targetId === 'cart' && typeof renderCart === "function") renderCart();
+      if (targetId === 'track' && typeof fetchOrders === "function") fetchOrders();
+      if (targetId === 'home' && typeof loadRecommended === "function") loadRecommended();
+      if (targetId === 'menu' && typeof loadMenuItems === "function") loadMenuItems();
     });
   });
-  // Menu tab filtering
-// Menu tab filtering
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.category-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const selectedCategory = btn.getAttribute('data-category');
-      renderMenuItems(selectedCategory);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.category-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const selectedCategory = btn.getAttribute('data-category');
+        renderMenuItems(selectedCategory);
+      });
     });
   });
-});
-
-
 </script>
 
-<!-- Load external script -->
+<!-- Toast Notification -->
+<div id="cartNotification" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #28a745;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: none;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: opacity 0.5s ease;">
+</div>
+
+
+<script>
+  function showCartNotification(message = "Item added to cart") {
+    const note = document.getElementById('cartNotification');
+    if (!note) return;
+  
+    note.textContent = message;
+    note.style.display = 'block';
+    note.style.opacity = '1';
+  
+    setTimeout(() => {
+      note.style.opacity = '0';
+      setTimeout(() => {
+        note.style.display = 'none';
+      }, 500);
+    }, 3000);
+  }
+  
+</script>
+
 <script src="script.js"></script>
 </body>
 </html>
