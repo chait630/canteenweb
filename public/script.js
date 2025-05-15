@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// ✅ Show cart toast notification
+
+
 // Cart logic
 function addToCart(name, price) {
   const existing = cart.find(item => item.name === name);
@@ -77,8 +80,12 @@ function addToCart(name, price) {
   } else {
     cart.push({ name, price, quantity: 1, total: price });
   }
+
   renderCart();
+  showCartNotification(`"${name}" added to cart`);
 }
+
+
 
 function renderCart() {
   const cartContainer = document.getElementById('cartContainer');
@@ -196,7 +203,7 @@ document.getElementById('menuForm').addEventListener('submit', async function (e
     if (res.ok) {
       alert('Item posted!');
       form.reset();
-      flavourInput.style.display = 'none';
+      if (flavourInput) flavourInput.style.display = 'none';
       loadMenuItems();
       loadRecommendedItems();
     } else {
@@ -211,14 +218,10 @@ document.getElementById('menuForm').addEventListener('submit', async function (e
 // Show/hide flavour input
 document.getElementById('itemCategory').addEventListener('change', function () {
   const flavourField = document.getElementById('flavourField');
-  if (this.value === 'Snacks') {
-    flavourField.style.display = 'block';
-  } else {
-    flavourField.style.display = 'none';
-  }
+  flavourField.style.display = this.value === 'Snacks' ? 'block' : 'none';
 });
 
-// Load recommended items (for Home)
+// Load recommended items (for Home tab)
 async function loadRecommendedItems() {
   try {
     const res = await fetch("/api/menu");
@@ -242,7 +245,30 @@ async function loadRecommendedItems() {
   }
 }
 
-// Initial load
+// Admin login
+function validateLogin() {
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
+
+  fetch('/api/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: user, password: pass })
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Unauthorized");
+      return res.json();
+    })
+    .then(() => {
+      document.getElementById('loginPrompt').style.display = "none";
+      document.getElementById('menuForm').style.display = "block";
+    })
+    .catch(() => {
+      alert("Invalid username or password");
+    });
+}
+
+// Initial page load
 window.addEventListener('DOMContentLoaded', () => {
   loadMenuItems();
   loadOrders();
