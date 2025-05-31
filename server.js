@@ -18,7 +18,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ✅ Middleware
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  origin: "http://localhost:3000", // Change this if your frontend is hosted elsewhere
+  credentials: true,
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -78,7 +81,7 @@ const uploadToCloudinary = (buffer) => {
   });
 };
 
-// ✅ Auth: Register Admin
+// ✅ Auth: Admin Login
 app.post("/api/admin/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -86,12 +89,19 @@ app.post("/api/admin/login", (req, res) => {
     username === process.env.ADMIN_USERNAME &&
     password === process.env.ADMIN_PASSWORD
   ) {
+    req.session.user = { username }; // ✅ Set session
     return res.status(200).json({ message: "Login successful" });
   } else {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 });
 
+// ✅ Auth: Admin Logout
+app.post("/api/admin/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.status(200).json({ message: "Logged out" });
+  });
+});
 
 // ✅ Middleware: Auth Check
 const isAuthenticated = (req, res, next) => {
